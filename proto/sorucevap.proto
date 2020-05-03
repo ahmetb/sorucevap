@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "sorucevap";
+
+// UserRecord represents database record of a signed in user.
+message UserRecord {
+    string ID = 1;
+    string FullName = 2;
+    string ProfilePictureURL = 3;
+    int64 RegistrationDate = 4;
+
+    // TODO add records of events viewed/participated
+}
+
+// UserSummary is to record user details in an embedded document.
+message UserSummary {
+    string id = 1;
+    string fullName = 2;
+    string profilePictureURL = 3;
+}
+
+message Event {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int64 createdAt = 4;
+    int64 expiresAt = 8;
+
+    UserSummary creator = 20;
+}
+
+enum VoteOp {
+    UNKNOWN = 0;
+    UPVOTE = 1;
+    DOWNVOTE = 2;
+};
+
+// Vote represents an embedded vote record
+message Vote {
+    UserSummary author = 1;
+
+    VoteOp op = 2;
+    int64 createdAt = 3;
+}
+
+// Question represents the db record.
+message Question {
+    string id = 1;
+    string eventID = 2;
+    UserSummary author = 3;
+    bool deleted =4;
+    int64 createdAt = 5;
+
+    string contents = 10;
+    repeated string contextLinks = 11;
+
+    int32 netVotes = 100;
+    repeated Vote votes = 101;
+}
+
+message DeleteEventRequest {
+    string id = 1;
+}
+
+message GetEventRequest {
+    string id = 1;
+}
+
+service Events {
+    rpc CreateEvent(Event) returns (Event) {}
+    rpc DeleteEvent(DeleteEventRequest) returns (google.protobuf.Empty) {}
+    rpc GetEvent(GetEventRequest) returns (Event) {}
+}
+
+message GetUserRequest {
+    string id = 1;
+}
+
+service Users {
+    rpc GetUser(GetUserRequest) returns (UserRecord);
+    rpc AddUser(UserRecord) returns (google.protobuf.Empty);
+}

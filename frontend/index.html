@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyA4z9PsVeDdF-Ys9kBnsD5mMecsuSKb7h8",
+            authDomain: "ahmetb-demo.firebaseapp.com",
+            databaseURL: "https://ahmetb-demo.firebaseio.com",
+            projectId: "ahmetb-demo",
+            storageBucket: "ahmetb-demo.appspot.com",
+            messagingSenderId: "233694408259",
+            appId: "1:233694408259:web:bb9213ac3609dcc7be6ef6"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+</head>
+<body>
+    <script>
+        // Initialize the FirebaseUI Widget using Firebase.
+        var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+        ui.start('#firebaseui-auth-container', {
+            // signInFlow: 'popup',
+            signInOptions: [
+                firebase.auth.GoogleAuthProvider.PROVIDER_ID
+            ],
+            // signInSuccessUrl: '/login',
+            callbacks: {
+                signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                    firebase.auth().currentUser.getIdToken().then(function(idToken){
+                        document.location = '/login?jwt=' + idToken;
+                    })
+                    return false;
+                },
+                uiShown: function() {
+                    document.getElementById('loader').style.display = 'none';
+                }
+            }
+        });
+    </script>
+
+    <!-- The surrounding HTML is left untouched by FirebaseUI.
+     Your app may use that space for branding, controls and other customizations.-->
+    <h1>Welcome to My Awesome App</h1>
+    <div id="firebaseui-auth-container"></div>
+    <div id="loader">Loading...</div>
+
+    <h1>Create new event</h1>
+    <form method="POST" action="/newEvent">
+        <input type="text" name="name" placeholder="Name"/>
+        <input type="text" name="description" placeholder="Description"/>
+        <input type="submit" value="Submit"/>
+    </form>
+</body>
+</html>
